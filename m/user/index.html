@@ -25,8 +25,8 @@
                     <a class="mui-navigate-right" href="#account">
                         <img class="mui-media-object mui-pull-left head-img" id="head-img" src="../images/user.jpg">
                         <div class="mui-media-body">
-                            Hello MUI
-                            <p class="mui-ellipsis">账号:hellomui</p>
+                           <span class="uname"></span>
+                            <p class="mui-ellipsis">账号:hello<span class="uname"></span></p>
                         </div>
                     </a>
                 </li>
@@ -56,12 +56,29 @@
     <script src="../res/mui/js/mui.min.js"></script>
     <script src="../js/jquery.min.js"></script>
     <script>
-        // 检测用户是否登录
+
+        // 退出登录
+        $('.btn_outLogin').on('click', function () {
+            // 销毁session 实现登录退出
+            $.ajax({
+                url: '/api/user/logout',
+                type: 'get',
+                success: function (info) {
+                    console.log(info);
+                    // 如果退出成功， 跳转到index.html
+                    location.href = '../index.html';
+                }
+            });
+        });
+
+        // 检测用户是否登录，获取的是用户的信息
         $.ajax({
             url:'/api/user/queryUserMessage',
             type:'get',
             success:function(info) {
                 console.log(info);
+                // 显示用户的信息
+                $('span.uname').text(info.username);
                 if (info.error) {
                     location.href = './login.html';
                 }
