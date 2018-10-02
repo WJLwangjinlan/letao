@@ -159,10 +159,42 @@
                 bounce: true, //是否启用回弹
             });
         }
-
     });
 
 
+    // // 4 添加购物车
+    $('.btn_addCart').on('click', function () {
+        // 1 获取参数（DOM)
+        // 2 发送服务端
+        // 3 等待响应
+
+        // 可先模拟参数
+        // 2 发送服务端
+        $.ajax({
+            url: '/api/cart/addCart',
+            type: 'post',
+            data: {
+                // 产品参数
+                productId: '',
+                // 产品名字
+                num: 1,
+                // 产品大小
+                size: 30
+            },
+
+            // 3 等待响应结果
+            success: function (info) {
+                console.log(info);
+
+                // 判断 info.error 
+                if (info.error) {
+                    alert('请先登录');
+                    // 登录跳转
+                    location.href = '/m/user/login.html?url='+location.href;
+                }
+            }
+        });
+    });
 </script>
 
 </body>

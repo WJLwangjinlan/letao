@@ -44,6 +44,22 @@
     <script src="../res/mui/js/mui.min.js"></script>
     <script src="../js/jquery.min.js"></script>
     <script>
+
+        //  地址参数
+        // 通过location.search 可以获取地址上？后面的数据
+        // ？后面的数据符合某种格式 key=val&key1=val1
+        var search = location.search.slice(1);
+
+        var reg = /url=(.+)/;
+        // console.log(reg,exec(search));
+        var match = reg.exec(search);
+        // 获取地址的url
+        var url = match && match[1];
+
+        // if (match) {
+        //     url = match[1]
+        // }        
+
        // 登录
         $('.btn_login').on('click', function () {
             //发送请求到服务器 http:localhost:3000
@@ -56,7 +72,11 @@
                 },
                 success: function (info) {
                     if (info.success) {
-                        location.href = './index.html';
+                        // 如果地址参数有url ，name跳转到url 对应的地址。如果没有url，跳转到index.html 
+                        // alert(url);
+                        if(url) return location.href = url;
+                        
+                            location.href = './index.html';
                     }
                 }
              });
