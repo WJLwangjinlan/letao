@@ -20,13 +20,13 @@
                     <span class="input-group-addon">
                         <i class="fa fa-user"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="用户名">
+                    <input name="username" type="text" class="form-control" placeholder="用户名">
                 </div>
                 <div class="input-group input-group-lg">
                     <span class="input-group-addon">
                         <i class="fa fa-key"></i>
                     </span>
-                    <input type="password" class="form-control" placeholder="密码">
+                    <input name="password" type="password" class="form-control" placeholder="密码">
                 </div>
                 <button type="submit" class="btn btn-lg btn-primary btn-block">登 录</button>
             </form>
@@ -35,5 +35,41 @@
     
     <script src="./assets/jquery/jquery.min.js"></script>
     <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
+
+    <script>
+        // 4 获取地址参数
+        var search = location.search.slice(1); // url=http://letao.com/brand.html
+        // 5 通过正则进行匹配
+        var reg = /url=(.+)/;
+        var match = reg.exec(search);
+        console.log(match);
+        // 6 如果匹配成功，返回的是一个数组，不成功为null
+        var url = match && match[1];
+        // console.log(url)
+        url = url || './index.html';
+        // 1 获取表单用户填写的信息，然后进行登录
+        $('form').on('submit', function() {
+            // 3 获取表单的数据
+            var data = $(this).serialize();
+            // 2 发送给请求
+            $.ajax({
+                url: '/api/employee/employeeLogin',
+                type: 'post',
+                data: data,
+                success: function (info) { 
+                    console.log(url);
+                    if (info.success) {
+                        // 跳转到正确的url地址
+                        location.href = url;
+                        // location.href = ""
+                    }
+                }
+            });
+            // 阻止表单的默认提交
+            return false;
+        })
+
+
+    </script>
 </body>
 </html>

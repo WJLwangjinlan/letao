@@ -102,32 +102,30 @@
                     <li class="active">添加品牌</li>
                 </ol>
                 <div class="category-add">
-                    <form action="" class="form-horizontal">
+                    <form class="form-horizontal">
                         <div class="form-group">
-                            <label for="" class="col-xs-4 control-label">品牌 logo</label>
+                            <label for="" name="brandLogo" class="col-xs-4 control-label">品牌 logo</label>
                             <div class="col-xs-1 preview">
                                 <img src="./images/default.png">
                                 <input type="file" id="upfile">
                                 <div class="cover">
                                     <i class="fa fa-upload"></i>                  
                                 </div>
+                                <input type="hidden" class="logo" name="brandLogo">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="" class="col-xs-4 control-label">名称</label>
                             <div class="col-xs-3">
-                                <input type="text" class="form-control input-sm" placeholder="填写品牌名称">
+                                <input type="text" name="brandName" class="form-control input-sm" placeholder="填写品牌名称">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="" class="col-xs-4 control-label">级别</label>
                             <div class="col-xs-2">
-                                <select name="" class="form-control input-sm">
-                                    <option value="">所属分类</option>
-                                    <option value="">前端开发</option>
-                                    <option value="">后端开发</option>
-                                    <option value="">数据库</option>
-                                    <option value="">视觉设计</option>
+                                <select name="categoryId" class="form-control input-sm">
+                                    
+                                    
                                 </select>
                             </div>
                         </div>
@@ -135,16 +133,16 @@
                             <label for="" class="col-xs-4 control-label">是否热门</label>
                             <div class="col-xs-3">
                                 <label class="checkbox-inline">
-                                    <input type="checkbox" checked> 是
+                                    <input name="hot" value="1" type="radio" checked> 是
                                 </label>
                                 <label class="checkbox-inline">
-                                    <input type="checkbox"> 否
+                                    <input name="hot" value="0" type="radio"> 否
                                 </label>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-xs-8">
-                                <a href="javascript:;" class="btn btn-success btn-sm pull-right">保存</a>
+                                <button type="submit" class="btn btn-success btn-sm pull-right">保存</button >
                             </div>                          
                         </div>
                     </form>
@@ -152,10 +150,95 @@
             </div>
         </div>
     </div>
-
+    
+    <script type="text/html" id="cate">
+        <option value="">请选择顶级分类</option>
+        {{each rows as val}}
+        <option value="{{val.id}}">{{val.categoryName}}</option>
+        {{/each}}
+    </script>
     <script src="./assets/jquery/jquery.min.js"></script>
     <script src="./assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="./assets/nprogress/nprogress.js"></script>
+    <script src="./js/jquery.form.min.js"></script>
+    <script src="./assets/art-template/template-web.js"></script>
     <script src="./js/common.js"></script>
+
+
+    <script>
+        // 2 上传品牌logo
+        // 当input 的change事件被触发的时候， 发送一个请求，实现图片上传
+        $('#upfile').on('change', function () {
+            //  通过this.files[0]来获取图片的信息
+            var file = this.files[0];
+            var data = new FormData();
+            // 追加表单的文件数据
+            data.append('pic1',file);
+            // 实例化xml
+            var xhr = new XMLHttpRequest();
+            xhr.open('post','/api/category/addSecondCategoryPic');
+            // 发送
+            xhr.send(data);
+
+            xhr.onload = function () {
+                // xhr.responseText();
+                console.log(xhr.responseText);
+                var info = JSON.parse(xhr.responseText);
+
+                // 3 实现图片的预览
+                $('.preview img').attr('src','/api' + info.picAddr);
+
+                // 4 将地址动态添加到input表单中
+                $('.logo').val(info.picAddr);
+            }
+        });
+        // 1 查询顶级分类
+        $.ajax({
+            url: '/api/category/queryTopCategoryPaging',
+            type: 'get',
+            data:{
+                page: 1,
+                pageSize: 10
+            },
+            success: function(info) {
+                console.log(info);
+
+                // 调用模板引擎
+                var html = template('cate',info);
+                // 添加DOM
+                $('select').html(html);
+            }
+        });
+        // 0 
+        // $('form').on('submit', function () {
+        //     $.ajax({
+        //         url: '',
+        //         type: 'post',
+        //         data:'',
+        //         success: function() {
+
+        //         }  
+        //     });
+        //     return false;
+        // })
+
+
+        // 通过jquery.form.js 可以简化ajax提交表单的代码书写
+        $('#myform').ajaxForm({
+                url: '/api/category/addSecondCategory',
+                type: 'post',
+                // contentType: 'application/x-www-form-urlencoded',
+                beforeSubmit: function () {
+                    // 将input type 为file的表单
+                    $('#upfile').val('');
+                },
+                success: function (info) {
+                    // console.log(info);
+                    if (info.success) {
+                        location.href = "./brand.html";
+                    }
+                }
+        });
+    </script>
 </body>
 </html>
